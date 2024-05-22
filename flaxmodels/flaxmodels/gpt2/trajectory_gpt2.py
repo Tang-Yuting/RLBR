@@ -344,21 +344,12 @@ class TransRewardModel(nn.Module):
 
         if self.config_.use_weighted_sum:
             x = nn.Dense(features=2 * self.pref_attn_embd_dim + 1)(hidden_output)
-            # only one head, because value has 1 dim for predicting rewards directly.
             num_heads = 1
-
-            # query: [B, seq_len, embd_dim]
-            # key: [B, seq_len, embd_dim]
-            # value: [B, seq_len, 1]
 
             query, key, value = jnp.split(x, [self.pref_attn_embd_dim, self.pref_attn_embd_dim * 2], axis=2)
             query = ops.split_heads(query, num_heads, self.pref_attn_embd_dim)
             key = ops.split_heads(key, num_heads, self.pref_attn_embd_dim)
             value = ops.split_heads(value, num_heads, 1)
-
-            # query: [B, 1, seq_len, embd_dim]
-            # key: [B, 1, seq_len, embd_dim]
-            # value: [B, 1, seq_len, 1]
 
             query_len, key_len = query.shape[-2], key.shape[-2]
             casual_mask = jnp.ones((1, 1, seq_length, seq_length))[:, :, key_len - query_len :key_len, :key_len]
@@ -369,9 +360,7 @@ class TransRewardModel(nn.Module):
             
             out, last_attn_weights = ops.attention(query, key, value, casual_mask, -1e-4, attn_dropout, scale_attn_weights=True, training=training, attn_mask=new_attn_mask, head_mask=None)
             attn_weights_list.append(last_attn_weights)
-            # out: [B, 1, seq_len, 1]
             output = ops.merge_heads(out, num_heads, 1)
-            # output: [B, seq_len, 1]
 
             return {"weighted_sum": output, "value": value, "state_pred": state_output}, attn_weights_list
 
