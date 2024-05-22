@@ -117,15 +117,6 @@ def index_batch(batch, indices):
             raise ValueError(f"Unsupported data type for key '{key}': {type(value)}")
     return indexed
 
-# def index_batch(batch, indices):
-#     indexed = {}
-#     for key, value in batch.items():
-#         # print("key", key, len(value))
-#         print(f"Data type for key '{key}': {type(value)}")
-#         indexed[key] = batch[key][indices, ...]
-#     return indexed
-
-
 def parition_batch_train_test(batch, train_ratio):
     train_indices = np.random.rand(batch['observations'].shape[0]) < train_ratio
     train_batch = index_batch(batch, train_indices)
