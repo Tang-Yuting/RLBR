@@ -1,6 +1,6 @@
-# RL from Bagged reward
+# RL from Bagged Reward
 
-This repository contains the Jax implementation of RL from Bagged reward.
+This repository contains the Jax implementation of RL from Bagged Reward.
 
 
 ## Docker
